@@ -17,3 +17,7 @@ class Colin:
 Colon = Colin(40, True, True, "Nominal", "God knows where...")
 
 Colon = Colon.haircut()
+
+print("Lorem ipsum")
+
+print (Colon)
