@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
 from pymavlink import mavutil
+import serial 
+
 
 class Bridge(object):
     """ MAVLink bridge
@@ -9,7 +11,8 @@ class Bridge(object):
         conn (TYPE): MAVLink connection
         data (dict): Deal with all data
     """
-    def __init__(self, device='udp:192.168.9.49:14550', baudrate=921600):
+    import serial
+    def __init__(self, device='/dev/serial0', baudrate=921600):
         """
         Args:
             device (str, optional): Input device
@@ -18,6 +21,7 @@ class Bridge(object):
         """
         self.conn = mavutil.mavlink_connection(device, baud=baudrate)
         self.data = {}
+        
 
     def get_data(self):
         """ Return data
@@ -49,7 +53,14 @@ class Bridge(object):
         msgs = self.get_all_msgs()
         # Update dict
         for msg in msgs:
-            self.data[msg.get_type()] = msg.to_dict()
+            if msg.get_type() == 'HEARTBEAT':
+                self.data[msg.get_type()] = msg.to_dict()
+            elif msg.get_type() == 'ATTITUDE':
+                self.data[msg.get_type()] = msg.to_dict()
+            elif msg.get_type() == 'VFR_HUD':
+                self.data[msg.get_type()] = msg.to_dict()
+            elif msg.get_type() == 'SYSTEM_TIME':
+                self.data[msg.get_type()] = msg.to_dict()
 
     def print_data(self):
         """ Debug function, print data dict
@@ -71,9 +82,17 @@ class Bridge(object):
             self.conn.target_component,             # target_component
             *rc_channel_values)                     # RC channel list, in microseconds.
 
+
 if __name__ == '__main__':
-    bridge = Bridge()
-    #bridge = Bridge(device='udp:192.169.9.49:14550')
+    #bridge = Bridge()
+    bridge = Bridge(device='/dev/serial0')
+    count = 2000
     while True:
+        
         bridge.update()
-        bridge.print_data()
+        
+        if count < 1:
+            count = 2000
+            bridge.print_data()
+        else:
+            count-=1
