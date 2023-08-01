@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 
 from pymavlink import mavutil
-import serial 
+import serial
+import time 
+
 
 
 class Bridge(object):
@@ -11,7 +13,7 @@ class Bridge(object):
         conn (TYPE): MAVLink connection
         data (dict): Deal with all data
     """
-    import serial
+    
     def __init__(self, device='/dev/serial0', baudrate=921600):
         """
         Args:
@@ -21,6 +23,8 @@ class Bridge(object):
         """
         self.conn = mavutil.mavlink_connection(device, baud=baudrate)
         self.data = {}
+        
+        
         
 
     def get_data(self):
@@ -81,11 +85,28 @@ class Bridge(object):
             self.conn.target_system,                # target_system
             self.conn.target_component,             # target_component
             *rc_channel_values)                     # RC channel list, in microseconds.
-
+            
+    
 
 if __name__ == '__main__':
     #bridge = Bridge()
     bridge = Bridge(device='/dev/serial0')
+    
+    
+    
+    count = 2000         
+    while True:
+        bridge.update()
+        if count < 1:
+            bridge.set_rc_channel_pwm(2, 1100)
+            bridge.set_rc_channel_pwm(4, 1100)
+            bridge.set_rc_channel_pwm(7, 1100)
+        else:
+            count-=1
+        
+    
+    
+    """
     count = 2000
     while True:
         
@@ -96,3 +117,5 @@ if __name__ == '__main__':
             bridge.print_data()
         else:
             count-=1
+    """
+

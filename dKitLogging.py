@@ -1,7 +1,7 @@
 from dronekit import connect
 
 # Connect to the Vehicle (in this case a UDP endpoint)
-vehicle = connect('192.168.9.49:14550', wait_ready=True)
+vehicle = connect('/dev/serial0', wait_ready=True, baud=921600)
 
 from dronekit import connect, VehicleMode
 # Get some vehicle attributes (state)
