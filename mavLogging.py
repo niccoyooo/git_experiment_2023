@@ -4,7 +4,16 @@ from pymavlink import mavutil
 import serial
 import time 
 
+# Code for setting up I2C from ADC
+import board
+import busio
+i2c = busio.I2C(board.SCL, board.SDA)
 
+import adafruit_ads1x15.ads1115 as ADS
+from adafruit_ads1x15.analog_in import AnalogIn
+ads = ADS.ADS1115(i2c)
+ads.gain = 1
+chan = AnalogIn(ads, ADS.P0)
 
 class Bridge(object):
     """ MAVLink bridge
@@ -78,7 +87,7 @@ class Bridge(object):
             id (TYPE): Channel id
             pwm (int, optional): Channel pwm value 1100-2000
         """
-        rc_channel_values = [65535 for _ in range(8)]
+        rc_channel_values = [65535 for _ in range(17)]
         rc_channel_values[id] = pwm
         #http://mavlink.org/messages/common#RC_CHANNELS_OVERRIDE
         self.conn.mav.rc_channels_override_send(
@@ -92,13 +101,14 @@ if __name__ == '__main__':
     #bridge = Bridge()
     bridge = Bridge(device='/dev/serial0')
     
-    
-    
     count = 2000         
     while True:
         bridge.update()
+        #value = chan.value
+        voltage = chan.voltage
+        trueVoltage = int(voltage*1000)-2000
         if count < 1:
-            bridge.set_rc_channel_pwm(2, 1100)
+            bridge.set_rc_channel_pwm(2, trueVoltage)
             bridge.set_rc_channel_pwm(4, 1100)
             bridge.set_rc_channel_pwm(7, 1100)
         else:
