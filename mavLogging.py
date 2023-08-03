@@ -1,10 +1,15 @@
 #!/usr/bin/env python
 
+# for the 'bridge object'
 from pymavlink import mavutil
 import serial
-import time 
+import time
+import math as m
+import numpy as np
 
 # Code for setting up I2C from ADC
+
+"""
 import board
 import busio
 i2c = busio.I2C(board.SCL, board.SDA)
@@ -14,6 +19,8 @@ from adafruit_ads1x15.analog_in import AnalogIn
 ads = ADS.ADS1115(i2c)
 ads.gain = 1
 chan = AnalogIn(ads, ADS.P0)
+
+"""
 
 class Bridge(object):
     """ MAVLink bridge
@@ -87,7 +94,7 @@ class Bridge(object):
             id (TYPE): Channel id
             pwm (int, optional): Channel pwm value 1100-2000
         """
-        rc_channel_values = [65535 for _ in range(17)]
+        rc_channel_values = [65535 for _ in range(8)] # 0-17 where 0 is channel 1 and so on and so forth...
         rc_channel_values[id] = pwm
         #http://mavlink.org/messages/common#RC_CHANNELS_OVERRIDE
         self.conn.mav.rc_channels_override_send(
@@ -101,16 +108,34 @@ if __name__ == '__main__':
     #bridge = Bridge()
     bridge = Bridge(device='/dev/serial0')
     
-    count = 2000         
+    count = 2000
+    start = m.ceil(time.perf_counter())       
+    
     while True:
         bridge.update()
-        #value = chan.value
+        
+        """
+        value = chan.value
         voltage = chan.voltage
-        trueVoltage = int(voltage*1000)-2000
+        trueVoltage = int(voltage*100)-2000
+        """
+        
         if count < 1:
-            bridge.set_rc_channel_pwm(2, trueVoltage)
-            bridge.set_rc_channel_pwm(4, 1100)
-            bridge.set_rc_channel_pwm(7, 1100)
+            #bridge.set_rc_channel_pwm(0, trueVoltage)  channel 1: stringPot voltage
+            
+            # channels 2 -> 4 are the xyz % displacement??? (coordinate with GoodJonny)
+            bridge.set_rc_channel_pwm(1, 1100)
+            bridge.set_rc_channel_pwm(2, 1100)
+            bridge.set_rc_channel_pwm(3, 1100)
+            
+            #channel 5 is a sine wave equation (python math module)
+            """
+            n = np.linspace(0, 0.04)
+            bridge.set_rc_channel_pwm(4, (1500 * np.sin(25 * n * np.pi)))
+            """
+            
+            mark = m.ceil(time.perf_counter())
+            bridge.set_rc_channel_pwm(4, (m.ceil(500*m.sin((mark-start)/200)+1500)))
         else:
             count-=1
         
