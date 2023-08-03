@@ -114,6 +114,7 @@ if __name__ == '__main__':
     while True:
         bridge.update()
         
+        # string pot settings and values
         """
         value = chan.value
         voltage = chan.voltage
@@ -129,19 +130,18 @@ if __name__ == '__main__':
             bridge.set_rc_channel_pwm(3, 1100)
             
             #channel 5 is a sine wave equation (python math module)
-            """
-            n = np.linspace(0, 0.04)
-            bridge.set_rc_channel_pwm(4, (1500 * np.sin(25 * n * np.pi)))
-            """
+            
             
             mark = m.ceil(time.perf_counter())
-            bridge.set_rc_channel_pwm(4, (m.ceil(500*m.sin((mark-start)/200)+1500)))
+            bridge.set_rc_channel_pwm(4, (m.ceil(500*m.sin((mark-start)*12)+1500)))
         else:
             count-=1
         
     
     
     """
+    
+    Reading version
     count = 2000
     while True:
         
