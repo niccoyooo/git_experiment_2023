@@ -121,21 +121,20 @@ if __name__ == '__main__':
         trueVoltage = int(voltage*100)-2000
         """
         
-        if count < 1:
-            #bridge.set_rc_channel_pwm(0, trueVoltage)  channel 1: stringPot voltage
+        
+        #bridge.set_rc_channel_pwm(0, trueVoltage)  channel 1: stringPot voltage
             
-            # channels 2 -> 4 are the xyz % displacement??? (coordinate with GoodJonny)
-            bridge.set_rc_channel_pwm(1, 1100)
-            bridge.set_rc_channel_pwm(2, 1100)
-            bridge.set_rc_channel_pwm(3, 1100)
+        # channels 2 -> 4 are the xyz % displacement??? (coordinate with GoodJonny)
+        bridge.set_rc_channel_pwm(1, 1100)
+        bridge.set_rc_channel_pwm(2, 1100)
+        bridge.set_rc_channel_pwm(3, 1100)
             
-            #channel 5 is a sine wave equation (python math module)
+        #channel 5 is a sine wave equation (python math and time module)
             
             
-            mark = m.ceil(time.perf_counter())
-            bridge.set_rc_channel_pwm(4, (m.ceil(500*m.sin((mark-start)*12)+1500)))
-        else:
-            count-=1
+        mark = m.ceil(time.perf_counter())
+        bridge.set_rc_channel_pwm(4, (m.ceil(500*m.sin((mark-start)*12)+1500)))
+     
         
     
     
