@@ -108,8 +108,8 @@ if __name__ == '__main__':
     #bridge = Bridge()
     bridge = Bridge(device='/dev/serial0')
     
-    count = 2000
-    start = m.ceil(time.perf_counter())       
+    
+    start = time.perf_counter()     
     
     while True:
         bridge.update()
@@ -132,7 +132,7 @@ if __name__ == '__main__':
         #channel 5 is a sine wave equation (python math and time module)
             
             
-        mark = m.ceil(time.perf_counter())
+        mark = time.perf_counter()
         bridge.set_rc_channel_pwm(4, (m.ceil(500*m.sin((mark-start)*12)+1500)))
      
         
